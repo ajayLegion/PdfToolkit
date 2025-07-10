@@ -1,0 +1,45 @@
+# PDF Processing Engine - Docker Compose Configuration
+version: '3.8'
+
+services:
+  pdf-engine:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - SESSION_SECRET=${SESSION_SECRET:-pdf-engine-secret-key}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///pdf_engine.db}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+    volumes:
+      - ./uploads:/app/uploads
+      - ./processed:/app/processed
+      - ./data:/app/data  # For persistent database
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional PostgreSQL database for production
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=pdf_engine
+      - POSTGRES_USER=pdf_user
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secure_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+
+# Usage:
+# Development (SQLite): docker-compose up
+# Production (PostgreSQL): docker-compose --profile production up
