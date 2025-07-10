@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Processing Engine - Home{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Hero Section -->
+    <div class="row justify-content-center text-center mb-5">
+        <div class="col-lg-8">
+            <div class="mb-4">
+                <i data-feather="file-text" style="width: 64px; height: 64px;" class="text-primary"></i>
+            </div>
+            <h1 class="display-4 fw-bold mb-3">PDF Processing Engine</h1>
+            <p class="lead text-muted mb-4">
+                Enterprise-grade RESTful API for comprehensive PDF processing operations. 
+                Merge, split, convert, compress, and extract metadata from PDF documents with ease.
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{{ url_for('web.documentation') }}" class="btn btn-primary btn-lg">
+                    <i data-feather="book" class="me-2"></i>View API Documentation
+                </a>
+                <a href="/api/health" class="btn btn-outline-secondary btn-lg">
+                    <i data-feather="activity" class="me-2"></i>Check API Status
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i data-feather="git-merge" style="width: 48px; height: 48px;" class="text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Merge PDFs</h5>
+                    <p class="card-text text-muted">
+                        Combine multiple PDF files into a single document with preserved formatting and metadata.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i data-feather="scissors" style="width: 48px; height: 48px;" class="text-success"></i>
+                    </div>
+                    <h5 class="card-title">Split PDFs</h5>
+                    <p class="card-text text-muted">
+                        Extract individual pages or page ranges from PDF documents into separate files.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i data-feather="image" style="width: 48px; height: 48px;" class="text-warning"></i>
+                    </div>
+                    <h5 class="card-title">Convert to Images</h5>
+                    <p class="card-text text-muted">
+                        Transform PDF pages into high-quality PNG, JPEG, or TIFF images with custom DPI settings.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i data-feather="info" style="width: 48px; height: 48px;" class="text-info"></i>
+                    </div>
+                    <h5 class="card-title">Extract Metadata</h5>
+                    <p class="card-text text-muted">
+                        Retrieve comprehensive document information including title, author, creation date, and more.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i data-feather="minimize-2" style="width: 48px; height: 48px;" class="text-danger"></i>
+                    </div>
+                    <h5 class="card-title">Compress PDFs</h5>
+                    <p class="card-text text-muted">
+                        Reduce file sizes with intelligent compression while maintaining document quality.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i data-feather="shield" style="width: 48px; height: 48px;" class="text-secondary"></i>
+                    </div>
+                    <h5 class="card-title">Secure API</h5>
+                    <p class="card-text text-muted">
+                        Enterprise-grade security with API key authentication and comprehensive error handling.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Start Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i data-feather="zap" class="me-2"></i>Quick Start
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">1. Get API Key</h6>
+                            <p class="text-muted mb-3">
+                                Contact your administrator to obtain an API key for authentication.
+                            </p>
+                            
+                            <h6 class="fw-bold">2. Upload PDF</h6>
+                            <p class="text-muted mb-3">
+                                Use the <code>/api/upload</code> endpoint to upload your PDF files.
+                            </p>
+                            
+                            <h6 class="fw-bold">3. Process</h6>
+                            <p class="text-muted">
+                                Call any processing endpoint with your uploaded files to perform operations.
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">Example Request</h6>
+                            <pre class="bg-dark text-light p-3 rounded"><code>curl -X POST \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{"files": ["document1.pdf", "document2.pdf"]}' \
+  /api/merge</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Status Section -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <h5 class="card-title mb-3">
+                        <i data-feather="server" class="me-2"></i>API Status
+                    </h5>
+                    <div id="api-status" class="mb-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-0">Real-time API health monitoring</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Check API health status
+async function checkAPIStatus() {
+    try {
+        const response = await fetch('/api/health');
+        const data = await response.json();
+        
+        const statusDiv = document.getElementById('api-status');
+        if (response.ok) {
+            statusDiv.innerHTML = `
+                <div class="d-flex align-items-center justify-content-center">
+                    <i data-feather="check-circle" class="text-success me-2"></i>
+                    <span class="text-success fw-bold">API Online</span>
+                </div>
+                <small class="text-muted d-block mt-1">Last checked: ${new Date().toLocaleTimeString()}</small>
+            `;
+        } else {
+            throw new Error('API offline');
+        }
+    } catch (error) {
+        const statusDiv = document.getElementById('api-status');
+        statusDiv.innerHTML = `
+            <div class="d-flex align-items-center justify-content-center">
+                <i data-feather="x-circle" class="text-danger me-2"></i>
+                <span class="text-danger fw-bold">API Offline</span>
+            </div>
+        `;
+    }
+    
+    // Re-initialize feather icons
+    feather.replace();
+}
+
+// Check status on page load
+document.addEventListener('DOMContentLoaded', checkAPIStatus);
+</script>
+{% endblock %}

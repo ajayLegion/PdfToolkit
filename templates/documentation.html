@@ -1,0 +1,406 @@
+{% extends "base.html" %}
+
+{% block title %}API Documentation - PDF Processing Engine{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="text-center mb-4">
+                <i data-feather="book" style="width: 48px; height: 48px;" class="text-primary mb-3"></i>
+                <h1 class="display-5 fw-bold">API Documentation</h1>
+                <p class="lead text-muted">Complete reference for the PDF Processing Engine API</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i data-feather="key" class="me-2"></i>Authentication
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <p>All API endpoints require authentication using an API key. Include your API key in one of these ways:</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">Header (Recommended)</h6>
+                            <pre class="bg-dark text-light p-3 rounded"><code>X-API-Key: your-api-key</code></pre>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">Authorization Header</h6>
+                            <pre class="bg-dark text-light p-3 rounded"><code>Authorization: Bearer your-api-key</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Base URL Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i data-feather="globe" class="me-2"></i>Base URL
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <pre class="bg-dark text-light p-3 rounded mb-0"><code id="base-url">Loading...</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Endpoints -->
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i data-feather="list" class="me-2"></i>API Endpoints
+            </h2>
+        </div>
+    </div>
+
+    <!-- Health Check -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Health Check</h5>
+                    <span class="badge bg-success">GET</span>
+                </div>
+                <div class="card-body">
+                    <p><code>/api/health</code></p>
+                    <p class="text-muted">Check API health status. No authentication required.</p>
+                    
+                    <h6 class="fw-bold">Response Example:</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "status": "healthy",
+  "timestamp": "2025-07-10T12:00:00Z",
+  "version": "1.0.0"
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload File -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Upload File</h5>
+                    <span class="badge bg-primary">POST</span>
+                </div>
+                <div class="card-body">
+                    <p><code>/api/upload</code></p>
+                    <p class="text-muted">Upload a PDF file for processing. Maximum file size: 50MB.</p>
+                    
+                    <h6 class="fw-bold">Request:</h6>
+                    <p>Multipart form data with a file field named <code>file</code>.</p>
+                    
+                    <h6 class="fw-bold">Response Example:</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "message": "File uploaded successfully",
+  "filename": "document_20250710_120000.pdf",
+  "size": 1048576
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Merge PDFs -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Merge PDFs</h5>
+                    <span class="badge bg-primary">POST</span>
+                </div>
+                <div class="card-body">
+                    <p><code>/api/merge</code></p>
+                    <p class="text-muted">Merge multiple PDF files into a single document.</p>
+                    
+                    <h6 class="fw-bold">Request Body:</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "files": ["document1.pdf", "document2.pdf"]
+}</code></pre>
+                    
+                    <h6 class="fw-bold">Response Example:</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "job_id": 123,
+  "message": "PDFs merged successfully",
+  "output_file": "merged_20250710_120000.pdf"
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Split PDF -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Split PDF</h5>
+                    <span class="badge bg-primary">POST</span>
+                </div>
+                <div class="card-body">
+                    <p><code>/api/split</code></p>
+                    <p class="text-muted">Split a PDF into individual pages or extract specific page ranges.</p>
+                    
+                    <h6 class="fw-bold">Request Body:</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "file": "document.pdf",
+  "pages": {
+    "start": 1,
+    "end": 5
+  }
+}</code></pre>
+                    <p class="text-muted small">The <code>pages</code> parameter is optional. Omit to split all pages.</p>
+                    
+                    <h6 class="fw-bold">Response Example:</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "job_id": 124,
+  "message": "PDF split successfully",
+  "output_files": ["document_page_1.pdf", "document_page_2.pdf"]
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Convert to Images -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Convert to Images</h5>
+                    <span class="badge bg-primary">POST</span>
+                </div>
+                <div class="card-body">
+                    <p><code>/api/convert-to-images</code></p>
+                    <p class="text-muted">Convert PDF pages to image files (PNG, JPEG, TIFF).</p>
+                    
+                    <h6 class="fw-bold">Request Body:</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "file": "document.pdf",
+  "format": "PNG",
+  "dpi": 300
+}</code></pre>
+                    <p class="text-muted small">
+                        <code>format</code>: PNG, JPEG, or TIFF (default: PNG)<br>
+                        <code>dpi</code>: 72-600 (default: 300)
+                    </p>
+                    
+                    <h6 class="fw-bold">Response Example:</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "job_id": 125,
+  "message": "PDF converted to images successfully",
+  "output_files": ["document_page_1.png", "document_page_2.png"]
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Extract Metadata -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Extract Metadata</h5>
+                    <span class="badge bg-primary">POST</span>
+                </div>
+                <div class="card-body">
+                    <p><code>/api/metadata</code></p>
+                    <p class="text-muted">Extract comprehensive metadata from a PDF file.</p>
+                    
+                    <h6 class="fw-bold">Request Body:</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "file": "document.pdf"
+}</code></pre>
+                    
+                    <h6 class="fw-bold">Response Example:</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "message": "Metadata extracted successfully",
+  "metadata": {
+    "pages": 10,
+    "file_size": 1048576,
+    "title": "Document Title",
+    "author": "John Doe",
+    "creation_date": "2025-01-01T00:00:00Z",
+    "encrypted": false,
+    "page_width": 595.0,
+    "page_height": 842.0
+  }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compress PDF -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Compress PDF</h5>
+                    <span class="badge bg-primary">POST</span>
+                </div>
+                <div class="card-body">
+                    <p><code>/api/compress</code></p>
+                    <p class="text-muted">Compress a PDF file to reduce its size.</p>
+                    
+                    <h6 class="fw-bold">Request Body:</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "file": "document.pdf",
+  "quality": "medium"
+}</code></pre>
+                    <p class="text-muted small">
+                        <code>quality</code>: low, medium, or high (default: medium)
+                    </p>
+                    
+                    <h6 class="fw-bold">Response Example:</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "job_id": 126,
+  "message": "PDF compressed successfully",
+  "output_file": "document_compressed_20250710_120000.pdf",
+  "compression_ratio": 35.2
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Status -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Job Status</h5>
+                    <span class="badge bg-success">GET</span>
+                </div>
+                <div class="card-body">
+                    <p><code>/api/status/{job_id}</code></p>
+                    <p class="text-muted">Check the status of a processing job.</p>
+                    
+                    <h6 class="fw-bold">Response Example:</h6>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "job_id": 123,
+  "operation": "merge",
+  "status": "completed",
+  "created_at": "2025-07-10T12:00:00Z",
+  "completed_at": "2025-07-10T12:01:00Z",
+  "output_files": ["merged_20250710_120000.pdf"]
+}</code></pre>
+                    <p class="text-muted small">
+                        Status values: <code>pending</code>, <code>processing</code>, <code>completed</code>, <code>failed</code>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Download File -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Download File</h5>
+                    <span class="badge bg-success">GET</span>
+                </div>
+                <div class="card-body">
+                    <p><code>/api/download/{filename}</code></p>
+                    <p class="text-muted">Download a processed file by filename.</p>
+                    
+                    <p class="text-info">
+                        <i data-feather="info" class="me-1"></i>
+                        Returns the file as a binary download with appropriate headers.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Responses -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i data-feather="alert-triangle" class="me-2"></i>Error Responses
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <p>All error responses follow this format:</p>
+                    <pre class="bg-dark text-light p-3 rounded"><code>{
+  "error": "Error message describing what went wrong"
+}</code></pre>
+                    
+                    <h6 class="fw-bold mt-4">Common HTTP Status Codes:</h6>
+                    <ul class="list-unstyled">
+                        <li><span class="badge bg-warning text-dark me-2">400</span>Bad Request - Invalid parameters or file format</li>
+                        <li><span class="badge bg-danger me-2">401</span>Unauthorized - Missing or invalid API key</li>
+                        <li><span class="badge bg-danger me-2">403</span>Forbidden - Insufficient permissions</li>
+                        <li><span class="badge bg-warning text-dark me-2">404</span>Not Found - File or resource not found</li>
+                        <li><span class="badge bg-danger me-2">500</span>Internal Server Error - Server processing error</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rate Limits -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i data-feather="clock" class="me-2"></i>Rate Limits & File Limits
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">File Limits</h6>
+                            <ul class="list-unstyled">
+                                <li><strong>Maximum file size:</strong> 50MB</li>
+                                <li><strong>Supported format:</strong> PDF only</li>
+                                <li><strong>Maximum merge files:</strong> 20 files</li>
+                                <li><strong>Image DPI range:</strong> 72-600 DPI</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">Processing Notes</h6>
+                            <ul class="list-unstyled">
+                                <li>Files are automatically cleaned up after 24 hours</li>
+                                <li>Processing is asynchronous for large files</li>
+                                <li>Use job status endpoint to monitor progress</li>
+                                <li>Encrypted PDFs may require special handling</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Set the base URL dynamically
+document.addEventListener('DOMContentLoaded', function() {
+    const baseUrl = window.location.origin;
+    document.getElementById('base-url').textContent = baseUrl;
+});
+</script>
+{% endblock %}
