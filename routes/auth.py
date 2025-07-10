@@ -32,6 +32,7 @@ def login():
         if user and user.check_password(password) and user.is_active:
             login_user(user, remember=remember)
             logger.info(f"User {user.username} logged in successfully")
+            flash(f'Welcome back, {user.username}!', 'success')
             
             # Redirect to next page or dashboard
             next_page = request.args.get('next')
