@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - PDF Processing Engine{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">Welcome back, {{ current_user.username }}!</h2>
+                    <p class="text-muted mb-0">Manage your PDF processing jobs and account settings</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('auth.profile') }}" class="btn btn-outline-primary">
+                        <i data-feather="user" class="me-2"></i>View Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i data-feather="file-text" style="width: 48px; height: 48px;" class="text-primary mb-3"></i>
+                    <h4 class="mb-1">{{ jobs|length }}</h4>
+                    <p class="text-muted mb-0">Total Jobs</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i data-feather="check-circle" style="width: 48px; height: 48px;" class="text-success mb-3"></i>
+                    <h4 class="mb-1">{{ jobs|selectattr('status', 'equalto', 'completed')|list|length }}</h4>
+                    <p class="text-muted mb-0">Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i data-feather="clock" style="width: 48px; height: 48px;" class="text-warning mb-3"></i>
+                    <h4 class="mb-1">{{ jobs|selectattr('status', 'equalto', 'processing')|list|length + jobs|selectattr('status', 'equalto', 'pending')|list|length }}</h4>
+                    <p class="text-muted mb-0">In Progress</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i data-feather="x-circle" style="width: 48px; height: 48px;" class="text-danger mb-3"></i>
+                    <h4 class="mb-1">{{ jobs|selectattr('status', 'equalto', 'failed')|list|length }}</h4>
+                    <p class="text-muted mb-0">Failed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Jobs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i data-feather="activity" class="me-2"></i>Recent Jobs
+                    </h5>
+                    <a href="{{ url_for('web.documentation') }}" class="btn btn-sm btn-outline-secondary">
+                        <i data-feather="plus" class="me-1"></i>New Job
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if jobs %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Job ID</th>
+                                        <th>Operation</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Completed</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for job in jobs %}
+                                    <tr>
+                                        <td><code>#{{ job.id }}</code></td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ job.operation|title }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if job.status == 'completed' else 'warning' if job.status in ['pending', 'processing'] else 'danger' }}"
+                                                  data-job-id="{{ job.id }}">
+                                                {{ job.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">
+                                                {{ job.created_at.strftime('%m/%d/%Y %H:%M') }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            {% if job.completed_at %}
+                                                <small class="text-muted">
+                                                    {{ job.completed_at.strftime('%m/%d/%Y %H:%M') }}
+                                                </small>
+                                            {% else %}
+                                                <small class="text-muted">-</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary btn-sm job-status-btn" 
+                                                        data-job-id="{{ job.id }}"
+                                                        title="Check Status">
+                                                    <i data-feather="info" style="width: 14px; height: 14px;"></i>
+                                                </button>
+                                                {% if job.status == 'completed' and job.output_files %}
+                                                    {% for file in job.output_files %}
+                                                        <button class="btn btn-outline-success btn-sm download-btn" 
+                                                                data-filename="{{ file }}"
+                                                                title="Download {{ file }}">
+                                                            <i data-feather="download" style="width: 14px; height: 14px;"></i>
+                                                        </button>
+                                                    {% endfor %}
+                                                {% endif %}
+                                                {% if job.error_message %}
+                                                    <button class="btn btn-outline-danger btn-sm error-btn" 
+                                                            data-error="{{ job.error_message }}"
+                                                            title="View Error">
+                                                        <i data-feather="alert-triangle" style="width: 14px; height: 14px;"></i>
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i data-feather="inbox" style="width: 64px; height: 64px;" class="text-muted mb-3"></i>
+                            <h5 class="text-muted">No jobs yet</h5>
+                            <p class="text-muted mb-3">Start by uploading and processing your first PDF file.</p>
+                            <a href="{{ url_for('web.documentation') }}" class="btn btn-primary">
+                                <i data-feather="book" class="me-2"></i>View API Documentation
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i data-feather="zap" class="me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="{{ url_for('web.documentation') }}" class="card text-decoration-none h-100">
+                                <div class="card-body text-center">
+                                    <i data-feather="book" style="width: 32px; height: 32px;" class="text-primary mb-2"></i>
+                                    <h6 class="card-title">API Documentation</h6>
+                                    <p class="card-text small text-muted">Learn how to use the PDF processing API</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="/api/health" target="_blank" class="card text-decoration-none h-100">
+                                <div class="card-body text-center">
+                                    <i data-feather="activity" style="width: 32px; height: 32px;" class="text-success mb-2"></i>
+                                    <h6 class="card-title">API Health Check</h6>
+                                    <p class="card-text small text-muted">Verify API service status</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('auth.profile') }}" class="card text-decoration-none h-100">
+                                <div class="card-body text-center">
+                                    <i data-feather="key" style="width: 32px; height: 32px;" class="text-warning mb-2"></i>
+                                    <h6 class="card-title">Manage API Key</h6>
+                                    <p class="card-text small text-muted">View and regenerate your API key</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Job Status Modal -->
+<div class="modal fade" id="jobStatusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Job Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="jobStatusContent">Loading...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">
+                    <i data-feather="alert-triangle" class="me-2"></i>Job Error
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="errorContent"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Job status buttons
+    document.querySelectorAll('.job-status-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const jobId = this.dataset.jobId;
+            const modal = new bootstrap.Modal(document.getElementById('jobStatusModal'));
+            const content = document.getElementById('jobStatusContent');
+            
+            content.innerHTML = 'Loading job status...';
+            modal.show();
+            
+            try {
+                const response = await window.pdfAPI.getJobStatus(jobId);
+                content.innerHTML = `
+                    <div class="row">
+                        <div class="col-sm-4"><strong>Job ID:</strong></div>
+                        <div class="col-sm-8">${response.job_id}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"><strong>Operation:</strong></div>
+                        <div class="col-sm-8">${response.operation}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"><strong>Status:</strong></div>
+                        <div class="col-sm-8">
+                            <span class="badge bg-${response.status === 'completed' ? 'success' : response.status === 'failed' ? 'danger' : 'warning'}">
+                                ${response.status}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"><strong>Created:</strong></div>
+                        <div class="col-sm-8">${new Date(response.created_at).toLocaleString()}</div>
+                    </div>
+                    ${response.completed_at ? `
+                    <div class="row">
+                        <div class="col-sm-4"><strong>Completed:</strong></div>
+                        <div class="col-sm-8">${new Date(response.completed_at).toLocaleString()}</div>
+                    </div>
+                    ` : ''}
+                    ${response.output_files ? `
+                    <div class="row">
+                        <div class="col-sm-4"><strong>Output Files:</strong></div>
+                        <div class="col-sm-8">
+                            ${response.output_files.map(file => `<div><code>${file}</code></div>`).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                    ${response.error ? `
+                    <div class="row">
+                        <div class="col-sm-4"><strong>Error:</strong></div>
+                        <div class="col-sm-8 text-danger">${response.error}</div>
+                    </div>
+                    ` : ''}
+                `;
+            } catch (error) {
+                content.innerHTML = `<div class="alert alert-danger">Error loading job status: ${error.message}</div>`;
+            }
+        });
+    });
+    
+    // Download buttons
+    document.querySelectorAll('.download-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const filename = this.dataset.filename;
+            window.pdfAPI.downloadFile(filename);
+        });
+    });
+    
+    // Error buttons
+    document.querySelectorAll('.error-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const error = this.dataset.error;
+            const modal = new bootstrap.Modal(document.getElementById('errorModal'));
+            const content = document.getElementById('errorContent');
+            
+            content.innerHTML = `<div class="alert alert-danger">${error}</div>`;
+            modal.show();
+        });
+    });
+    
+    // Set API key for the current user
+    window.pdfAPI.setApiKey('{{ current_user.api_key }}');
+    
+    // Start job monitoring for pending/processing jobs
+    const activeJobs = {{ jobs|selectattr('status', 'in', ['pending', 'processing'])|map(attribute='id')|list|tojson }};
+    activeJobs.forEach(jobId => {
+        window.jobMonitor.addJob(jobId);
+    });
+});
+</script>
+{% endblock %}

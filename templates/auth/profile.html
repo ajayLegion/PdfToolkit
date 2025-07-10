@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - PDF Processing Engine{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Profile Header -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i data-feather="user" class="me-2"></i>User Profile
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted">Account Information</h6>
+                            <p><strong>Username:</strong> {{ user.username }}</p>
+                            <p><strong>Email:</strong> {{ user.email }}</p>
+                            <p><strong>Member since:</strong> {{ user.created_at.strftime('%B %d, %Y') }}</p>
+                            <p><strong>Status:</strong> 
+                                <span class="badge {{ 'bg-success' if user.is_active else 'bg-danger' }}">
+                                    {{ 'Active' if user.is_active else 'Inactive' }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted">Account Statistics</h6>
+                            <p><strong>Total Jobs:</strong> {{ user.jobs|length }}</p>
+                            <p><strong>Completed Jobs:</strong> {{ user.jobs|selectattr('status', 'equalto', 'completed')|list|length }}</p>
+                            <p><strong>Failed Jobs:</strong> {{ user.jobs|selectattr('status', 'equalto', 'failed')|list|length }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- API Key Management -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i data-feather="key" class="me-2"></i>API Key
+                    </h5>
+                    <button class="btn btn-outline-secondary btn-sm copy-btn" 
+                            data-copy="{{ user.api_key }}"
+                            title="Copy to clipboard">
+                        <i data-feather="copy" class="me-1"></i>Copy
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <code class="flex-grow-1 bg-dark text-light p-2 rounded user-select-all">{{ user.api_key }}</code>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i data-feather="info" class="me-2"></i>
+                        <strong>Keep your API key secure!</strong> This key provides access to all PDF processing functions. 
+                        Include it in your API requests using the <code>X-API-Key</code> header.
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('auth.regenerate_api_key') }}" 
+                          onsubmit="return confirm('Are you sure? This will invalidate your current API key.')">
+                        <button type="submit" class="btn btn-warning">
+                            <i data-feather="refresh-cw" class="me-2"></i>Regenerate API Key
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- API Usage Examples -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i data-feather="code" class="me-2"></i>API Usage Examples
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="fw-bold">cURL Example</h6>
+                            <pre class="bg-dark text-light p-3 rounded"><code>curl -X POST \
+  -H "X-API-Key: {{ user.api_key }}" \
+  -F "file=@document.pdf" \
+  {{ request.url_root }}api/upload</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">Python Example</h6>
+                            <pre class="bg-dark text-light p-3 rounded"><code>import requests
+
+headers = {
+    'X-API-Key': '{{ user.api_key[:16] }}...'
+}
+
+response = requests.post(
+    '{{ request.url_root }}api/upload',
+    files={'file': open('doc.pdf', 'rb')},
+    headers=headers
+)</code></pre>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">JavaScript Example</h6>
+                            <pre class="bg-dark text-light p-3 rounded"><code>const formData = new FormData();
+formData.append('file', file);
+
+fetch('{{ request.url_root }}api/upload', {
+    method: 'POST',
+    headers: {
+        'X-API-Key': '{{ user.api_key[:16] }}...'
+    },
+    body: formData
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i data-feather="zap" class="me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{{ url_for('web.dashboard') }}" class="btn btn-primary">
+                            <i data-feather="activity" class="me-2"></i>View Dashboard
+                        </a>
+                        <a href="{{ url_for('web.documentation') }}" class="btn btn-outline-secondary">
+                            <i data-feather="book" class="me-2"></i>API Documentation
+                        </a>
+                        <a href="/api/health" class="btn btn-outline-success" target="_blank">
+                            <i data-feather="check-circle" class="me-2"></i>Health Check
+                        </a>
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger">
+                            <i data-feather="log-out" class="me-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

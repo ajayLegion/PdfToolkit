@@ -39,7 +39,7 @@ def dashboard():
             job_data['output_files'] = json.loads(job.output_files)
         jobs_data.append(job_data)
     
-    return render_template('dashboard.html', jobs=jobs_data)
+    return render_template('auth/dashboard.html', jobs=jobs_data)
 
 @bp.route('/api-test')
 def api_test():
