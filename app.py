@@ -41,6 +41,7 @@ with app.app_context():
     # Import models and routes
     import models
     from routes import api, web
+    from services.auth import create_default_user
     
     # Register blueprints
     app.register_blueprint(api.bp, url_prefix='/api')
@@ -48,3 +49,6 @@ with app.app_context():
     
     # Create all database tables
     db.create_all()
+    
+    # Create default user for testing
+    create_default_user()
