@@ -41,6 +41,17 @@ def dashboard():
     
     return render_template('auth/dashboard.html', jobs=jobs_data)
 
+@bp.route('/tools')
+def tools():
+    """PDF tools list page"""
+    return render_template('tools.html')
+
+@bp.route('/upload')
+@login_required
+def upload():
+    """File upload and processing interface"""
+    return render_template('upload.html')
+
 @bp.route('/api-test')
 def api_test():
     """API testing interface"""

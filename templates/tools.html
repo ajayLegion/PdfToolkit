@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Tools - PDF Processing Engine{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header Section -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 mb-3">PDF Processing Tools</h1>
+            <p class="lead text-muted">Professional-grade PDF operations for enterprise applications</p>
+            {% if not current_user.is_authenticated %}
+                <div class="alert alert-info">
+                    <i data-feather="info" class="me-2"></i>
+                    <a href="{{ url_for('auth.login') }}" class="alert-link">Sign in</a> to use the web interface or get your API key for programmatic access.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Tools Grid -->
+    <div class="row g-4">
+        <!-- Merge PDFs -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i data-feather="layers" style="width: 48px; height: 48px;" class="text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Merge PDFs</h5>
+                    <p class="card-text text-muted">Combine multiple PDF files into a single document while preserving quality and formatting.</p>
+                    <div class="mt-auto">
+                        <span class="badge bg-primary mb-2">Popular</span>
+                        {% if current_user.is_authenticated %}
+                            <div class="d-grid">
+                                <a href="{{ url_for('web.upload') }}?operation=merge" class="btn btn-primary">
+                                    <i data-feather="layers" class="me-2"></i>Merge Files
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="d-grid">
+                                <button class="btn btn-outline-primary" onclick="showLoginPrompt()">
+                                    <i data-feather="layers" class="me-2"></i>Merge Files
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Split PDF -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i data-feather="scissors" style="width: 48px; height: 48px;" class="text-success"></i>
+                    </div>
+                    <h5 class="card-title">Split PDF</h5>
+                    <p class="card-text text-muted">Extract specific pages or split a PDF into individual pages for targeted document management.</p>
+                    <div class="mt-auto">
+                        {% if current_user.is_authenticated %}
+                            <div class="d-grid">
+                                <a href="{{ url_for('web.upload') }}?operation=split" class="btn btn-success">
+                                    <i data-feather="scissors" class="me-2"></i>Split PDF
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="d-grid">
+                                <button class="btn btn-outline-success" onclick="showLoginPrompt()">
+                                    <i data-feather="scissors" class="me-2"></i>Split PDF
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Convert to Images -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i data-feather="image" style="width: 48px; height: 48px;" class="text-warning"></i>
+                    </div>
+                    <h5 class="card-title">Convert to Images</h5>
+                    <p class="card-text text-muted">Transform PDF pages into high-quality PNG or JPEG images with customizable resolution.</p>
+                    <div class="mt-auto">
+                        {% if current_user.is_authenticated %}
+                            <div class="d-grid">
+                                <a href="{{ url_for('web.upload') }}?operation=convert" class="btn btn-warning">
+                                    <i data-feather="image" class="me-2"></i>Convert PDF
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="d-grid">
+                                <button class="btn btn-outline-warning" onclick="showLoginPrompt()">
+                                    <i data-feather="image" class="me-2"></i>Convert PDF
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Extract Metadata -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i data-feather="info" style="width: 48px; height: 48px;" class="text-info"></i>
+                    </div>
+                    <h5 class="card-title">Extract Metadata</h5>
+                    <p class="card-text text-muted">Retrieve document properties including title, author, creation date, and technical specifications.</p>
+                    <div class="mt-auto">
+                        {% if current_user.is_authenticated %}
+                            <div class="d-grid">
+                                <a href="{{ url_for('web.upload') }}?operation=metadata" class="btn btn-info">
+                                    <i data-feather="info" class="me-2"></i>Extract Data
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="d-grid">
+                                <button class="btn btn-outline-info" onclick="showLoginPrompt()">
+                                    <i data-feather="info" class="me-2"></i>Extract Data
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compress PDF -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i data-feather="minimize" style="width: 48px; height: 48px;" class="text-danger"></i>
+                    </div>
+                    <h5 class="card-title">Compress PDF</h5>
+                    <p class="card-text text-muted">Reduce file size while maintaining quality using advanced compression algorithms.</p>
+                    <div class="mt-auto">
+                        <span class="badge bg-success mb-2">Size Reduction</span>
+                        {% if current_user.is_authenticated %}
+                            <div class="d-grid">
+                                <a href="{{ url_for('web.upload') }}?operation=compress" class="btn btn-danger">
+                                    <i data-feather="minimize" class="me-2"></i>Compress PDF
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="d-grid">
+                                <button class="btn btn-outline-danger" onclick="showLoginPrompt()">
+                                    <i data-feather="minimize" class="me-2"></i>Compress PDF
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Access -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i data-feather="code" style="width: 48px; height: 48px;" class="text-secondary"></i>
+                    </div>
+                    <h5 class="card-title">API Access</h5>
+                    <p class="card-text text-muted">Integrate PDF processing into your applications using our comprehensive REST API.</p>
+                    <div class="mt-auto">
+                        <span class="badge bg-secondary mb-2">Enterprise</span>
+                        <div class="d-grid">
+                            <a href="{{ url_for('web.documentation') }}" class="btn btn-secondary">
+                                <i data-feather="code" class="me-2"></i>View API Docs
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i data-feather="star" class="me-2"></i>Why Choose Our PDF Engine?
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <i data-feather="shield" style="width: 32px; height: 32px;" class="text-success mb-2"></i>
+                                <h6>Enterprise Security</h6>
+                                <p class="small text-muted">Deploy on your own infrastructure with complete data control</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <i data-feather="zap" style="width: 32px; height: 32px;" class="text-warning mb-2"></i>
+                                <h6>High Performance</h6>
+                                <p class="small text-muted">Optimized processing engine for large-scale operations</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <i data-feather="settings" style="width: 32px; height: 32px;" class="text-info mb-2"></i>
+                                <h6>Fully Customizable</h6>
+                                <p class="small text-muted">Adapt and extend functionality to meet your specific needs</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <i data-feather="trending-up" style="width: 32px; height: 32px;" class="text-primary mb-2"></i>
+                                <h6>Scalable Architecture</h6>
+                                <p class="small text-muted">Handle thousands of documents with horizontal scaling</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    {% if not current_user.is_authenticated %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-primary text-white border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <h4 class="mb-3">Ready to Get Started?</h4>
+                    <p class="mb-4">Create your free account and start processing PDFs in minutes.</p>
+                    <div class="d-flex gap-3 justify-content-center">
+                        <a href="{{ url_for('auth.signup') }}" class="btn btn-light btn-lg">
+                            <i data-feather="user-plus" class="me-2"></i>Create Account
+                        </a>
+                        <a href="{{ url_for('web.documentation') }}" class="btn btn-outline-light btn-lg">
+                            <i data-feather="book" class="me-2"></i>View Documentation
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Login Prompt Modal -->
+<div class="modal fade" id="loginPromptModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i data-feather="lock" class="me-2"></i>Login Required
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Please sign in to access PDF processing tools.</p>
+                <p class="small text-muted">Don't have an account? You can create one for free.</p>
+            </div>
+            <div class="modal-footer">
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+                    <i data-feather="log-in" class="me-2"></i>Sign In
+                </a>
+                <a href="{{ url_for('auth.signup') }}" class="btn btn-outline-secondary">
+                    <i data-feather="user-plus" class="me-2"></i>Sign Up
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function showLoginPrompt() {
+    const modal = new bootstrap.Modal(document.getElementById('loginPromptModal'));
+    modal.show();
+}
+</script>
+{% endblock %}
