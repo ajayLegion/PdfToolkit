@@ -17,6 +17,20 @@ class User(UserMixin, db.Model):
     
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def get_id(self):
+        """Override get_id to ensure it returns a string"""
+        return str(self.id)
+    
+    @property
+    def is_authenticated(self):
+        """Return True if the user is authenticated"""
+        return True
+    
+    @property
+    def is_anonymous(self):
+        """Return True if the user is anonymous"""
+        return False
 
 class ProcessingJob(db.Model):
     id = db.Column(db.Integer, primary_key=True)
