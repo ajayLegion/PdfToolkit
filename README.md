@@ -160,11 +160,3 @@ python main.py
 
 ### Testing
 The application includes a web-based API testing interface at `/docs`.
-
-## License
-
-[Your License Here]
-
-## Support
-
-For enterprise support and deployment assistance, contact: [your-contact]
